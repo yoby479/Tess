@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — TOXIC TECH PLUGER</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.png">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-brand">
+        <img src="logo.png" alt="TTP" class="nav-logo-img">
+        <span class="nav-title">Toxic Tech Pluger</span>
+    </div>
+    <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="admin.html" class="nav-link admin-link active">Admin</a>
+        <button class="nav-link" onclick="handleLogout()" style="color:var(--accent-red);">Exit</button>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<div class="container" id="mainContent" style="display:none;">
+
+    <div class="admin-header">
+        <h1>&gt;_ Dashboard</h1>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <div class="user-badge">
+                <div class="avatar">G</div>
+                <span id="adminUser">gracey</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+        <div class="stat-card cyan">
+            <div class="stat-label">Total Links</div>
+            <div class="stat-value cyan" id="totalLinks">0</div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-label">Paid</div>
+            <div class="stat-value green" id="paidLinks">0</div>
+        </div>
+        <div class="stat-card gold">
+            <div class="stat-label">Revenue</div>
+            <div class="stat-value gold" id="totalRevenue">KSh 0</div>
+        </div>
+        <div class="stat-card red">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value red" id="pendingLinks">0</div>
+        </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="card" style="margin-bottom:20px;">
+        <div class="card-header">
+            <span class="card-title"><span class="icon" style="background:var(--neon-glow);color:var(--neon);">&#9889;</span> Quick Actions</span>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="openCreateModal()">+ New Lipa Link</button>
+            <button class="btn btn-outline" onclick="loadLinks()">Refresh</button>
+        </div>
+    </div>
+
+    <!-- LINKS TABLE -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title"><span class="icon" style="background:var(--accent-cyan-glow);color:var(--accent-cyan);">&#128196;</span> Lipa Links</span>
+        </div>
+        <div style="overflow-x:auto;">
+            <table class="links-table">
+                <thead>
+                    <tr>
+                        <th>Link ID</th>
+                        <th>Title</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Paid</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="linksTableBody">
+                    <tr><td colspan="7" class="empty-state"><div class="icon">&#128196;</div><p>No links yet. Create your first Lipa Link.</p></td></tr>
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- NOT AUTHORIZED -->
+<div id="notAuth" style="display:none;">
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="logo.png" alt="TTP" class="login-logo-img">
+                <h1>Toxic Tech Pluger</h1>
+                <p>Authentication Required</p>
+            </div>
+            <a href="login.html" class="btn btn-primary btn-block btn-lg">&gt;_ Login</a>
+        </div>
+    </div>
+</div>
+
+<!-- CREATE / EDIT MODAL -->
+<div class="modal-overlay" id="createModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">New Lipa Link</h2>
+            <button class="modal-close" onclick="closeModal('createModal')">&times;</button>
+        </div>
+        <div class="alert alert-error" id="modalError"><span>&#9888;</span><span id="modalErrorMsg"></span></div>
+        <div class="alert alert-success" id="modalSuccess"><span>&#9989;</span><span id="modalSuccessMsg"></span></div>
+
+        <form id="createForm" onsubmit="handleCreateLink(event)">
+            <input type="hidden" id="editLinkId" value="">
+            <div class="form-group">
+                <label class="form-label">Link Title *</label>
+                <input type="text" class="form-input" id="linkTitle" placeholder="e.g., VIP Signal Package" required spellcheck="false">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Amount (KSh) *</label>
+                <input type="number" class="form-input" id="linkAmount" placeholder="500" min="1" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-textarea" id="linkDesc" placeholder="Brief description of what customer pays for..."></textarea>
+            </div>
+
+            <div class="payment-divider"></div>
+            <p style="font-size:12px;font-weight:800;color:var(--accent-gold);margin-bottom:12px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:1px;">&#9889; Delivery Content (what buyer receives after payment)</p>
+
+            <div class="tabs" id="deliveryTabs">
+                <button type="button" class="tab-btn active" onclick="switchDeliveryTab('text')">Text</button>
+                <button type="button" class="tab-btn" onclick="switchDeliveryTab('file')">File</button>
+                <button type="button" class="tab-btn" onclick="switchDeliveryTab('both')">Both</button>
+            </div>
+
+            <div id="deliveryTextTab" class="delivery-tab-content">
+                <div class="form-group">
+                    <label class="form-label">Delivery Text / Instructions</label>
+                    <textarea class="form-textarea" id="linkDeliveryText" rows="5" placeholder="Enter what the customer receives:&#10;- Download links&#10;- Access codes&#10;- Instructions&#10;- Any text content..."></textarea>
+                </div>
+            </div>
+
+            <div id="deliveryFileTab" class="delivery-tab-content" style="display:none;">
+                <div class="form-group">
+                    <label class="form-label">Upload File</label>
+                    <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                        <div class="icon">&#128206;</div>
+                        <div class="text">Click to upload</div>
+                        <div class="subtext">PDF, Images, Docs, ZIP, APK, etc.</div>
+                        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv,.zip,.rar,.doc,.docx,.xls,.xlsx,.mp3,.mp4,.apk,.exe,.psd,.ai" onchange="handleFileSelect(this)">
+                    </div>
+                    <div id="fileInfo" style="display:none;margin-top:8px;padding:10px;background:var(--bg-input);border:1px solid rgba(0,255,136,0.2);border-radius:4px;font-size:12px;color:var(--neon);font-family:var(--font-mono);"></div>
+                </div>
+            </div>
+
+            <div id="deliveryBothTab" class="delivery-tab-content" style="display:none;">
+                <div class="form-group">
+                    <label class="form-label">Delivery Text</label>
+                    <textarea class="form-textarea" id="linkDeliveryTextBoth" rows="3" placeholder="Additional instructions..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Upload File</label>
+                    <div class="file-upload-area" onclick="document.getElementById('fileInputBoth').click()">
+                        <div class="icon">&#128206;</div>
+                        <div class="text">Click to upload</div>
+                        <div class="subtext">PDF, Images, Docs, ZIP, APK, etc.</div>
+                        <input type="file" id="fileInputBoth" accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv,.zip,.rar,.doc,.docx,.xls,.xlsx,.mp3,.mp4,.apk,.exe,.psd,.ai" onchange="handleFileSelectBoth(this)">
+                    </div>
+                    <div id="fileInfoBoth" style="display:none;margin-top:8px;padding:10px;background:var(--bg-input);border:1px solid rgba(0,255,136,0.2);border-radius:4px;font-size:12px;color:var(--neon);font-family:var(--font-mono);"></div>
+                </div>
+            </div>
+
+            <input type="hidden" id="uploadedFilePath" value="">
+            <input type="hidden" id="uploadedFileName" value="">
+
+            <div style="display:flex;gap:12px;margin-top:20px;">
+                <button type="submit" class="btn btn-primary btn-block" id="createBtn">Create Link</button>
+                <button type="button" class="btn btn-outline" onclick="closeModal('createModal')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- LINK DETAILS MODAL -->
+<div class="modal-overlay" id="detailsModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Link Details</h2>
+            <button class="modal-close" onclick="closeModal('detailsModal')">&times;</button>
+        </div>
+        <div id="detailsContent"></div>
+        <button class="btn btn-outline btn-block" onclick="closeModal('detailsModal')" style="margin-top:16px;">Close</button>
+    </div>
+</div>
+
+<div class="powered-by-footer">
+    <span class="brand">yobby mind's</span> &bull; Toxic Tech Pluger Admin
+</div>
+
+<!-- FLOATING WHATSAPP BUTTON -->
+<a href="https://wa.me/254104751847" target="_blank" class="whatsapp-float" title="Chat with us on WhatsApp">
+    <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor">
+        <path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.132 6.744 3.054 9.378L1.056 31.2l6.044-1.954A15.9 15.9 0 0016 32c8.822 0 16-7.178 16-16S24.822 0 16.004 0zm9.33 22.614c-.39 1.1-1.932 2.014-3.17 2.28-.846.18-1.95.322-5.67-1.218-4.762-1.972-7.826-6.816-8.064-7.13-.23-.314-1.884-2.506-1.884-4.778s1.196-3.39 1.62-3.852c.424-.462.926-.578 1.238-.578.314 0 .626.002.9.004.29.002.678-.11 1.06.808.39.938 1.332 3.25 1.448 3.486.118.236.194.512.04.826-.156.314-.236.508-.47.784-.236.274-.496.614-.708.824-.236.236-.482.49-.208.96.276.462 1.226 2.024 2.632 3.278 1.808 1.618 3.332 2.118 3.796 2.354.462.236.732.198 1.002-.118.27-.314 1.158-1.35 1.466-1.812.308-.462.616-.386 1.04-.236.424.156 2.682 1.264 3.142 1.494.462.236.768.352.882.548.118.194.118 1.136-.272 2.238z"/>
+    </svg>
+</a>
+
+<script>
+let selectedFile = null;
+let selectedFileBoth = null;
+
+fetch('/api/auth?action=check')
+    .then(r => r.json())
+    .then(data => {
+        if (data.logged_in) {
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('notAuth').style.display = 'none';
+            document.getElementById('adminUser').textContent = data.user || 'gracey';
+            loadLinks();
+        } else {
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('notAuth').style.display = 'block';
+        }
+    });
+
+function handleLogout() {
+    fetch('/api/auth?action=logout').then(() => { window.location.href = 'login.html'; });
+}
+
+function switchDeliveryTab(tab) {
+    document.querySelectorAll('.delivery-tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('#deliveryTabs .tab-btn').forEach(el => el.classList.remove('active'));
+    if (tab === 'text') { document.getElementById('deliveryTextTab').style.display = 'block'; document.querySelectorAll('#deliveryTabs .tab-btn')[0].classList.add('active'); }
+    else if (tab === 'file') { document.getElementById('deliveryFileTab').style.display = 'block'; document.querySelectorAll('#deliveryTabs .tab-btn')[1].classList.add('active'); }
+    else { document.getElementById('deliveryBothTab').style.display = 'block'; document.querySelectorAll('#deliveryTabs .tab-btn')[2].classList.add('active'); }
+}
+
+function handleFileSelect(input) {
+    const file = input.files[0]; if (!file) return;
+    selectedFile = file;
+    document.getElementById('fileInfo').style.display = 'block';
+    document.getElementById('fileInfo').innerHTML = '&#128206; ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+}
+function handleFileSelectBoth(input) {
+    const file = input.files[0]; if (!file) return;
+    selectedFileBoth = file;
+    document.getElementById('fileInfoBoth').style.display = 'block';
+    document.getElementById('fileInfoBoth').innerHTML = '&#128206; ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+}
+
+async function uploadFile(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const resp = await fetch('/api/upload', { method: 'POST', body: formData });
+    const data = await resp.json();
+    if (!data.success) throw new Error(data.message);
+    return data;
+}
+
+async function handleCreateLink(e) {
+    e.preventDefault();
+    const btn = document.getElementById('createBtn');
+    const errorEl = document.getElementById('modalError');
+    const successEl = document.getElementById('modalSuccess');
+    const editId = document.getElementById('editLinkId').value;
+    errorEl.classList.remove('show');
+    successEl.classList.remove('show');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Processing...';
+
+    try {
+        let filePath = '', fileName = '';
+        const activeTab = document.querySelector('#deliveryTabs .tab-btn.active').textContent.trim();
+
+        if (activeTab === 'File' && selectedFile) {
+            const upload = await uploadFile(selectedFile);
+            filePath = upload.file_path; fileName = upload.file_name;
+        } else if (activeTab === 'Both' && selectedFileBoth) {
+            const upload = await uploadFile(selectedFileBoth);
+            filePath = upload.file_path; fileName = upload.file_name;
+        }
+
+        let deliveryText = '';
+        if (activeTab === 'Text') deliveryText = document.getElementById('linkDeliveryText').value;
+        else if (activeTab === 'Both') deliveryText = document.getElementById('linkDeliveryTextBoth').value;
+
+        const payload = {
+            title: document.getElementById('linkTitle').value.trim(),
+            amount: parseInt(document.getElementById('linkAmount').value),
+            description: document.getElementById('linkDesc').value.trim(),
+            delivery_text: deliveryText,
+            delivery_file: filePath || null,
+            delivery_file_name: fileName || null
+        };
+
+        let method = editId ? 'PUT' : 'POST';
+        if (editId) payload.id = editId;
+
+        const resp = await fetch('/api/links', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const data = await resp.json();
+
+        if (data.success) {
+            const linkUrl = window.location.origin + '/pay.html?id=' + (data.link ? data.link.id : editId);
+            successEl.innerHTML = '<span>&#9989;</span> <span>' + (editId ? 'Updated' : 'Created') + '! Link: <strong style="font-family:monospace;font-size:11px;">' + linkUrl + '</strong> <button class="copy-btn" onclick="navigator.clipboard.writeText(\'' + linkUrl + '\');this.textContent=\'Copied!\'">Copy</button></span>';
+            successEl.classList.add('show');
+            setTimeout(() => { closeModal('createModal'); loadLinks(); resetForm(); }, 2000);
+        } else { throw new Error(data.message || 'Failed'); }
+    } catch (err) {
+        errorEl.classList.add('show');
+        document.getElementById('modalErrorMsg').textContent = err.message;
+    }
+    btn.disabled = false;
+    btn.textContent = editId ? 'Update Link' : 'Create Link';
+}
+
+function resetForm() {
+    document.getElementById('createForm').reset();
+    document.getElementById('editLinkId').value = '';
+    document.getElementById('fileInfo').style.display = 'none';
+    document.getElementById('fileInfoBoth').style.display = 'none';
+    selectedFile = null; selectedFileBoth = null;
+}
+
+function openCreateModal() {
+    resetForm();
+    document.getElementById('modalTitle').textContent = 'New Lipa Link';
+    document.getElementById('createBtn').textContent = 'Create Link';
+    document.getElementById('modalError').classList.remove('show');
+    document.getElementById('modalSuccess').classList.remove('show');
+    switchDeliveryTab('text');
+    document.getElementById('createModal').classList.add('show');
+}
+
+function openEditModal(linkId) {
+    fetch('/api/links?action=check&id=' + linkId)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            document.getElementById('editLinkId').value = data.id;
+            document.getElementById('linkTitle').value = data.title;
+            document.getElementById('linkAmount').value = data.amount;
+            document.getElementById('linkDesc').value = data.description || '';
+            document.getElementById('linkDeliveryText').value = data.delivery_text || '';
+            document.getElementById('linkDeliveryTextBoth').value = data.delivery_text || '';
+            document.getElementById('modalTitle').textContent = 'Edit Lipa Link';
+            document.getElementById('createBtn').textContent = 'Update Link';
+            document.getElementById('modalError').classList.remove('show');
+            document.getElementById('modalSuccess').classList.remove('show');
+            if (data.delivery_file) {
+                switchDeliveryTab('file');
+                document.getElementById('fileInfo').style.display = 'block';
+                document.getElementById('fileInfo').innerHTML = '&#128206; ' + (data.delivery_file_name || data.delivery_file);
+            } else { switchDeliveryTab('text'); }
+            document.getElementById('createModal').classList.add('show');
+        });
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function loadLinks() {
+    fetch('/api/links')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            const links = data.links || [];
+            document.getElementById('totalLinks').textContent = links.length;
+            document.getElementById('paidLinks').textContent = links.filter(l => l.status === 'paid').length;
+            document.getElementById('pendingLinks').textContent = links.filter(l => l.status === 'pending').length;
+            const revenue = links.filter(l => l.status === 'paid').reduce((s, l) => s + (l.amount || 0), 0);
+            document.getElementById('totalRevenue').textContent = 'KSh ' + revenue.toLocaleString();
+
+            const tbody = document.getElementById('linksTableBody');
+            if (links.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><div class="icon">&#128196;</div><p>No links yet. Create your first Lipa Link.</p></td></tr>';
+                return;
+            }
+            tbody.innerHTML = links.map(link => {
+                const url = window.location.origin + '/pay.html?id=' + link.id;
+                return `<tr>
+                    <td><span style="color:var(--accent-cyan);">${link.id}</span><br><button class="copy-btn" onclick="navigator.clipboard.writeText('${url}');this.textContent='Copied!'">Copy</button></td>
+                    <td><strong style="color:var(--text-primary);">${escapeHtml(link.title)}</strong></td>
+                    <td style="color:var(--accent-gold);font-weight:700;">KSh ${link.amount.toLocaleString()}</td>
+                    <td><span class="status-badge ${link.status}">${link.status}</span></td>
+                    <td style="font-size:11px;">${link.created_at || '-'}</td>
+                    <td style="font-size:11px;">${link.paid_at || '-'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline" onclick="viewDetails('${link.id}')">View</button>
+                        <button class="btn btn-sm btn-outline" onclick="openEditModal('${link.id}')" style="margin-left:4px;">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteLink('${link.id}')" style="margin-left:4px;">Del</button>
+                    </td></tr>`;
+            }).join('');
+        });
+}
+
+function viewDetails(id) {
+    fetch('/api/links?action=check&id=' + id)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            const link = data;
+            const url = window.location.origin + '/pay.html?id=' + link.id;
+            document.getElementById('detailsContent').innerHTML = `
+                <div style="margin-bottom:16px;"><strong style="color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:2px;font-family:var(--font-mono);">Link ID</strong><p style="font-family:var(--font-mono);color:var(--accent-cyan);margin-top:4px;">${link.id}</p></div>
+                <div style="margin-bottom:16px;"><strong style="color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:2px;font-family:var(--font-mono);">Title</strong><p style="margin-top:4px;">${escapeHtml(link.title)}</p></div>
+                <div style="margin-bottom:16px;"><strong style="color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:2px;font-family:var(--font-mono);">Amount</strong><p style="font-weight:900;color:var(--accent-gold);font-size:22px;margin-top:4px;font-family:var(--font-mono);">KSh ${link.amount.toLocaleString()}</p></div>
+                <div style="margin-bottom:16px;"><strong style="color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:2px;font-family:var(--font-mono);">Description</strong><p style="color:var(--text-secondary);margin-top:4px;">${escapeHtml(link.description || 'No description')}</p></div>
+                <div style="margin-bottom:16px;"><strong style="color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:2px;font-family:var(--font-mono);">Status</strong><br><span class="status-badge ${link.status}" style="margin-top:4px;display:inline-block;">${link.status}</span></div>
+                <div style="margin-bottom:16px;"><strong style="color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:2px;font-family:var(--font-mono);">Payment URL</strong><div style="display:flex;gap:8px;align-items:center;margin-top:4px;"><code style="font-size:11px;color:var(--neon);word-break:break-all;">${url}</code><button class="copy-btn" onclick="navigator.clipboard.writeText('${url}');this.textContent='Copied!'">Copy</button></div></div>
+                ${link.delivery_text ? `<div style="margin-bottom:16px;"><strong style="color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:2px;font-family:var(--font-mono);">Delivery Text</strong><pre style="background:var(--bg-input);padding:12px;border:1px solid var(--border);border-radius:4px;font-size:12px;color:var(--text-secondary);white-space:pre-wrap;margin-top:4px;font-family:var(--font-mono);">${escapeHtml(link.delivery_text)}</pre></div>` : ''}
+                ${link.delivery_file_name ? `<div><strong style="color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:2px;font-family:var(--font-mono);">Delivery File</strong><p style="color:var(--neon);margin-top:4px;font-family:var(--font-mono);">&#128206; ${escapeHtml(link.delivery_file_name)}</p></div>` : ''}
+            `;
+            document.getElementById('detailsModal').classList.add('show');
+        });
+}
+
+function deleteLink(id) {
+    if (!confirm('Delete this link?')) return;
+    fetch('/api/links', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+        .then(r => r.json())
+        .then(data => { if (data.success) loadLinks(); });
+}
+
+function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+</script>
+
+</body>
+</html>

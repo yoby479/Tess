@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOXIC TECH PLUGER — Lipa Link Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.png">
+    <style>
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 120px);
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .hero-inner { max-width: 650px; }
+
+        .hero-logo-wrap {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 28px;
+        }
+        .hero-logo-wrap img {
+            width: 120px;
+            height: 120px;
+            border-radius: var(--radius-lg);
+            object-fit: cover;
+            border: 2px solid var(--neon);
+            box-shadow: 0 0 40px var(--neon-glow-strong), 0 0 80px var(--neon-glow);
+            animation: glow 3s ease-in-out infinite;
+        }
+        .hero-logo-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border: 1px solid var(--neon);
+            border-radius: calc(var(--radius-lg) + 4px);
+            opacity: 0.2;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .hero h1 {
+            font-size: 34px;
+            font-weight: 900;
+            margin-bottom: 16px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+        }
+
+        .tagline {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 36px;
+            line-height: 1.8;
+            font-family: var(--font-mono);
+        }
+        .tagline strong { color: var(--neon); }
+
+        .hero-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .terminal-box {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            margin: 40px auto 0;
+            max-width: 500px;
+            text-align: left;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 2;
+        }
+        .terminal-box .cmd { color: var(--neon); }
+        .terminal-box .out { color: var(--text-secondary); padding-left: 16px; }
+        .terminal-box .prompt { color: var(--accent-cyan); }
+        .terminal-box .warn { color: var(--accent-gold); }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-top: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .feature-card {
+            background: var(--gradient-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px 16px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--gradient-neon);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .feature-card:hover::before { opacity: 0.6; }
+        .feature-card:hover {
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-glow);
+            transform: translateY(-3px);
+        }
+        .feature-icon { font-size: 28px; margin-bottom: 10px; }
+        .feature-card h3 {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .feature-card p { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+        .steps {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 36px;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+        }
+        .step-num {
+            width: 28px;
+            height: 28px;
+            background: transparent;
+            border: 1px solid var(--neon);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 12px;
+            color: var(--neon);
+            flex-shrink: 0;
+            font-family: var(--font-mono);
+        }
+        .step-text {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-align: left;
+            font-family: var(--font-mono);
+        }
+        .step-text strong {
+            display: block;
+            color: var(--text-primary);
+            font-size: 12px;
+        }
+        .step-arrow {
+            color: var(--text-muted);
+            font-size: 16px;
+            font-family: var(--font-mono);
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 22px; letter-spacing: 3px; }
+            .hero-logo-wrap img { width: 90px; height: 90px; }
+            .step-arrow { display: none; }
+            .steps { flex-direction: column; align-items: center; }
+            .terminal-box { font-size: 11px; padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-brand">
+        <img src="logo.png" alt="TTP" class="nav-logo-img">
+        <span class="nav-title">Toxic Tech Pluger</span>
+    </div>
+    <div class="nav-links">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="login.html" class="nav-link admin-link">Admin</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-inner">
+        <div class="hero-logo-wrap">
+            <img src="logo.png" alt="TOXIC TECH PLUGER">
+        </div>
+
+        <h1 class="glitch" data-text="TOXIC TECH PLUGER">TOXIC TECH PLUGER</h1>
+
+        <p class="tagline">
+            Create <strong>lipa links</strong>, share with your customers,<br>
+            and receive instant <strong>M-Pesa payments</strong>.<br>
+            Upload files or write content &mdash; auto-delivered after payment.
+        </p>
+
+        <div class="hero-actions">
+            <a href="login.html" class="btn btn-primary btn-lg">&gt;_ Access Panel</a>
+            <a href="login.html" class="btn btn-outline btn-lg">Create Link</a>
+        </div>
+
+        <!-- Steps -->
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">01</div>
+                <div class="step-text"><strong>Create</strong>Set amount & content</div>
+            </div>
+            <div class="step-arrow">&rarr;</div>
+            <div class="step">
+                <div class="step-num">02</div>
+                <div class="step-text"><strong>Share</strong>Send link to buyer</div>
+            </div>
+            <div class="step-arrow">&rarr;</div>
+            <div class="step">
+                <div class="step-num">03</div>
+                <div class="step-text"><strong>STK Push</strong>M-Pesa confirms</div>
+            </div>
+            <div class="step-arrow">&rarr;</div>
+            <div class="step">
+                <div class="step-num">04</div>
+                <div class="step-text"><strong>Deliver</strong>Content unlocked</div>
+            </div>
+        </div>
+
+        <!-- Terminal -->
+        <div class="terminal-box" id="terminalBox">
+            <div><span class="prompt">root@ttp:~$</span> <span class="cmd">lipa create --title "VIP Package" --amount 500</span></div>
+            <div class="out">[+] Link created: TTP-A8F3K2M1</div>
+            <div class="out" id="terminalUrl">[+] URL: <span class="cmd">loading...</span></div>
+            <div class="warn">[*] Awaiting M-Pesa STK push confirmation...</div>
+            <div class="out">[+] Webhook received: payment completed</div>
+            <div class="out">[+] Content delivered to +2547***890</div>
+            <div><span class="prompt">root@ttp:~$</span> <span class="cmd" style="animation: flicker 1s infinite;">_</span></div>
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">&#128274;</div>
+                <h3>STK Push</h3>
+                <p>Real M-Pesa with webhook confirmation</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128206;</div>
+                <h3>File Delivery</h3>
+                <p>Upload PDFs, images, docs, ZIP</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128221;</div>
+                <h3>Text Delivery</h3>
+                <p>Codes, instructions, download links</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div class="powered-by-footer">
+    <span class="brand">yobby mind's</span> &bull; Toxic Tech Pluger Lipa Link System
+</div>
+
+<!-- FLOATING WHATSAPP BUTTON -->
+<a href="https://wa.me/254104751847" target="_blank" class="whatsapp-float" title="Chat with us on WhatsApp">
+    <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor">
+        <path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.132 6.744 3.054 9.378L1.056 31.2l6.044-1.954A15.9 15.9 0 0016 32c8.822 0 16-7.178 16-16S24.822 0 16.004 0zm9.33 22.614c-.39 1.1-1.932 2.014-3.17 2.28-.846.18-1.95.322-5.67-1.218-4.762-1.972-7.826-6.816-8.064-7.13-.23-.314-1.884-2.506-1.884-4.778s1.196-3.39 1.62-3.852c.424-.462.926-.578 1.238-.578.314 0 .626.002.9.004.29.002.678-.11 1.06.808.39.938 1.332 3.25 1.448 3.486.118.236.194.512.04.826-.156.314-.236.508-.47.784-.236.274-.496.614-.708.824-.236.236-.482.49-.208.96.276.462 1.226 2.024 2.632 3.278 1.808 1.618 3.332 2.118 3.796 2.354.462.236.732.198 1.002-.118.27-.314 1.158-1.35 1.466-1.812.308-.462.616-.386 1.04-.236.424.156 2.682 1.264 3.142 1.494.462.236.768.352.882.548.118.194.118 1.136-.272 2.238z"/>
+    </svg>
+</a>
+
+<script>
+// Auto-fill the terminal URL with the actual current domain
+document.getElementById('terminalUrl').innerHTML = '[+] URL: <span class="cmd">' + window.location.origin + '/pay.html?id=TTP-A8F3K2M1</span>';
+</script>
+
+</body>
+</html>

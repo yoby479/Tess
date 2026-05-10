@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay — TOXIC TECH PLUGER</title>
+    <link rel="icon" href="logo.png">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            background: #000000;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        /* === LOADING === */
+        .loading-wrap {
+            text-align: center;
+        }
+        .loading-wrap .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid #222;
+            border-top-color: #6C5CE7;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto 16px;
+        }
+        .loading-wrap p { color: #666; font-size: 13px; }
+
+        /* === CARD === */
+        .pay-card {
+            background: #ffffff;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 420px;
+            overflow: hidden;
+            box-shadow: 0 8px 40px rgba(108,92,231,0.12);
+        }
+
+        /* === HEADER === */
+        .pay-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 18px 20px 14px;
+        }
+        .pay-logo-box {
+            width: 38px;
+            height: 38px;
+            background: #6C5CE7;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .pay-logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .pay-brand {
+            font-size: 14px;
+            font-weight: 800;
+            color: #1a1a2e;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .pay-badge {
+            background: #6C5CE7;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* === BANNER === */
+        .pay-banner {
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0d0d2a 100%);
+            padding: 28px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .pay-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 50%, #6C5CE730 0%, transparent 50%),
+                radial-gradient(circle at 80% 30%, #00ff8820 0%, transparent 50%);
+        }
+        .pay-banner-inner { position: relative; z-index: 1; }
+        .pay-banner-title {
+            font-size: 20px;
+            font-weight: 900;
+            color: #00ff88;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(0,255,136,0.3);
+        }
+        .pay-banner-lines {
+            color: rgba(255,255,255,0.8);
+            font-size: 12px;
+            line-height: 1.8;
+            font-weight: 500;
+        }
+        .pay-banner-lines span {
+            color: #ffffff;
+            font-weight: 700;
+        }
+        .pay-banner-secure {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            background: #22c55e;
+            color: white;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 2;
+        }
+
+        /* === AMOUNT SECTION === */
+        .amount-section {
+            padding: 24px 24px 20px;
+            text-align: center;
+        }
+        .amount-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+        .amount-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 6px;
+        }
+        .amount-currency {
+            font-size: 18px;
+            font-weight: 700;
+            color: #888;
+        }
+        .amount-value {
+            font-size: 42px;
+            font-weight: 900;
+            color: #6C5CE7;
+            line-height: 1;
+        }
+        .amount-service {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .amount-desc {
+            font-size: 12px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        /* === PHONE INPUT === */
+        .input-section {
+            padding: 0 24px 20px;
+        }
+        .input-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+        }
+        .input-label svg { width: 16px; height: 16px; color: #6C5CE7; }
+        .phone-input-wrap {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .phone-input-wrap:focus-within {
+            border-color: #6C5CE7;
+            box-shadow: 0 0 0 3px rgba(108,92,231,0.12);
+        }
+        .phone-prefix {
+            padding: 14px 12px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+            background: #f8f8f8;
+            border-right: 1px solid #e0e0e0;
+            user-select: none;
+        }
+        .phone-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 14px 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            background: transparent;
+            letter-spacing: 1px;
+        }
+        .phone-input::placeholder { color: #bbb; font-weight: 400; }
+
+        /* === PAY BUTTON === */
+        .btn-section {
+            padding: 0 24px 16px;
+        }
+        .pay-btn {
+            width: 100%;
+            padding: 16px;
+            background: #6C5CE7;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.3s, transform 0.15s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+        }
+        .pay-btn:hover {
+            background: #5a4bd6;
+            box-shadow: 0 6px 25px rgba(108,92,231,0.35);
+            transform: translateY(-1px);
+        }
+        .pay-btn:active { transform: scale(0.98); }
+        .pay-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .pay-btn svg { width: 18px; height: 18px; }
+        .pay-btn .spinner {
+            width: 18px; height: 18px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        /* === SECURITY BADGES === */
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 24px 20px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge svg { width: 12px; height: 12px; }
+        .badge.purple { background: rgba(108,92,231,0.1); color: #6C5CE7; }
+        .badge.green { background: rgba(34,197,94,0.1); color: #22c55e; }
+        .badge.orange { background: rgba(245,158,11,0.1); color: #f59e0b; }
+
+        /* === STATUS MESSAGES === */
+        .status-msg {
+            margin: 0 24px 16px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            display: none;
+            text-align: center;
+        }
+        .status-msg.show { display: block; }
+        .status-msg.pending { background: rgba(108,92,231,0.08); border: 1px solid rgba(108,92,231,0.2); color: #6C5CE7; }
+        .status-msg.success { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: #22c55e; }
+        .status-msg.error { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; }
+        .status-msg .status-icon { font-size: 28px; margin-bottom: 6px; }
+        .status-msg .status-text { font-size: 12px; margin-top: 4px; opacity: 0.8; }
+        .status-msg .retry-btn {
+            margin-top: 10px;
+            padding: 8px 20px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* === SUCCESS SCREEN === */
+        .success-screen {
+            display: none;
+            margin: 0 24px 20px;
+            padding: 24px;
+            text-align: center;
+        }
+        .success-screen.show { display: block; }
+        .success-checkmark {
+            width: 64px;
+            height: 64px;
+            background: #22c55e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 32px;
+            animation: successPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 30px rgba(34,197,94,0.3);
+        }
+        @keyframes successPop {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .success-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: #22c55e;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .success-subtitle {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 4px;
+        }
+        .success-brand {
+            font-size: 12px;
+            color: #6C5CE7;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        /* === DELIVERY === */
+        .delivery-section {
+            display: none;
+            margin: 0 24px 20px;
+            padding: 18px;
+            background: rgba(34,197,94,0.05);
+            border: 1px solid rgba(34,197,94,0.15);
+            border-radius: 12px;
+            text-align: left;
+        }
+        .delivery-section.show { display: block; }
+        .delivery-section h4 {
+            color: #22c55e;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .delivery-content {
+            color: #555;
+            font-size: 13px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .delivery-file-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+            padding: 10px 18px;
+            background: #22c55e;
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .delivery-file-btn:hover { background: #16a34a; color: white; }
+
+        /* === FOOTER === */
+        .pay-footer {
+            padding: 16px 24px;
+            text-align: center;
+            border-top: 1px solid #f0f0f0;
+        }
+        .pay-footer .cancel-link {
+            font-size: 13px;
+            color: #999;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .pay-footer .cancel-link:hover { color: #6C5CE7; }
+        .pay-footer .powered {
+            font-size: 10px;
+            color: #bbb;
+            letter-spacing: 0.5px;
+        }
+        .pay-footer .powered .brand {
+            font-weight: 800;
+            color: #6C5CE7;
+        }
+
+        /* === NOT FOUND === */
+        .not-found-card {
+            text-align: center;
+            padding: 40px 24px;
+        }
+        .not-found-card .nf-icon {
+            width: 60px; height: 60px;
+            background: rgba(239,68,68,0.08);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 14px;
+        }
+        .not-found-card h3 { font-size: 18px; color: #333; margin-bottom: 6px; }
+        .not-found-card p { font-size: 13px; color: #999; margin-bottom: 20px; }
+        .not-found-card .home-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #6C5CE7;
+            color: white;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60%, 100% { content: '...'; } }
+        .loading-dots::after { content: ''; animation: dots 1.5s infinite; }
+
+        /* === WHATSAPP FLOAT === */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(37,211,102,0.4);
+            z-index: 9999;
+            transition: transform 0.3s, box-shadow 0.3s;
+            color: white;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(37,211,102,0.5);
+            color: white;
+        }
+        .whatsapp-float::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid rgba(37,211,102,0.4);
+            animation: wa-pulse 2s ease-in-out infinite;
+        }
+        @keyframes wa-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.15); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-wrap" id="loadingState">
+    <div class="spinner"></div>
+    <p>Loading payment...</p>
+</div>
+
+<!-- NOT FOUND -->
+<div class="pay-card" id="notFound" style="display:none;">
+    <div class="not-found-card">
+        <div class="nf-icon">&#9888;</div>
+        <h3>Link Not Found</h3>
+        <p>This payment link is invalid or has been removed.</p>
+        <a href="index.html" class="home-btn">&larr; Back Home</a>
+        <div class="pay-footer" style="border-top:none;padding-top:20px;">
+            <span class="powered">Powered by <span class="brand">yobby mind's</span></span>
+        </div>
+    </div>
+</div>
+
+<!-- PAYMENT CARD -->
+<div class="pay-card" id="paymentCard" style="display:none;">
+
+    <!-- HEADER -->
+    <div class="pay-header">
+        <div class="pay-logo-box">
+            <img src="logo.png" alt="TTP">
+        </div>
+        <span class="pay-brand">Toxic Tech Pluger</span>
+        <span class="pay-badge">Pay</span>
+    </div>
+
+    <!-- BANNER -->
+    <div class="pay-banner">
+        <div class="pay-banner-secure">Secure</div>
+        <div class="pay-banner-inner">
+            <div class="pay-banner-title" id="bannerTitle">Toxic Tech Pluger</div>
+            <div class="pay-banner-lines">
+                <span>Lipa Link</span> Payment<br>
+                Instant delivery after payment
+            </div>
+        </div>
+    </div>
+
+    <!-- AMOUNT -->
+    <div class="amount-section" id="amountSection">
+        <div class="amount-label">Amount to Pay</div>
+        <div class="amount-row">
+            <span class="amount-currency">KSh</span>
+            <span class="amount-value" id="payAmount">0</span>
+        </div>
+        <div class="amount-service" id="payTitle">Payment</div>
+        <div class="amount-desc" id="payDesc">Complete your payment below</div>
+    </div>
+
+    <!-- PHONE INPUT -->
+    <div class="input-section" id="formSection">
+        <div class="input-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            M-Pesa Phone Number
+        </div>
+        <div class="phone-input-wrap">
+            <span class="phone-prefix">+254</span>
+            <input type="tel" class="phone-input" id="phoneNumber" placeholder="0712 345 678" maxlength="10" inputmode="numeric" pattern="[0-9]*">
+        </div>
+    </div>
+
+    <!-- PAY BUTTON -->
+    <div class="btn-section" id="btnSection">
+        <button class="pay-btn" id="payBtn" onclick="initiatePayment()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Pay with M-Pesa
+        </button>
+    </div>
+
+    <!-- STATUS MESSAGES -->
+    <div class="status-msg pending" id="statusPending">
+        <div class="status-icon">
+            <span class="spinner" style="width:28px;height:28px;border-width:3px;border-top-color:#6C5CE7;display:inline-block;"></span>
+        </div>
+        <strong>Waiting for payment...</strong>
+        <p class="status-text">Check your phone and enter your M-Pesa PIN<span class="loading-dots"></span></p>
+    </div>
+
+    <!-- SUCCESS SCREEN -->
+    <div class="success-screen" id="successScreen">
+        <div class="success-checkmark">&#9989;</div>
+        <div class="success-title">Payment Successfully</div>
+        <div class="success-subtitle">Thank you for using our services</div>
+        <div class="success-brand">( YOBBYKING )</div>
+    </div>
+
+    <div class="status-msg error" id="statusError">
+        <div class="status-icon">&#10060;</div>
+        <strong>Payment Failed</strong>
+        <p class="status-text" id="errorMessage">Payment was not completed.</p>
+        <button class="retry-btn" onclick="resetPayment()">Try Again</button>
+    </div>
+
+    <!-- DELIVERY -->
+    <div class="delivery-section" id="deliverySection">
+        <h4>&#127873; Your Delivery</h4>
+        <div class="delivery-content" id="deliveryContent"></div>
+        <a id="deliveryFileLink" href="#" target="_blank" class="delivery-file-btn" style="display:none;">
+            &#128206; <span id="deliveryFileName">Download File</span>
+        </a>
+    </div>
+
+    <!-- BADGES -->
+    <div class="badges" id="badgesSection">
+        <div class="badge purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Encrypted
+        </div>
+        <div class="badge green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Secure
+        </div>
+        <div class="badge orange">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Verified
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="pay-footer">
+        <a href="index.html" class="cancel-link">&larr; Cancel</a>
+        <br>
+        <span class="powered">Powered by <span class="brand">yobby mind's</span> &bull; Secured by M-Pesa</span>
+    </div>
+
+</div>
+
+<!-- FLOATING WHATSAPP BUTTON -->
+<a href="https://wa.me/254104751847" target="_blank" class="whatsapp-float" title="Need help? Chat on WhatsApp">
+    <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor">
+        <path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.132 6.744 3.054 9.378L1.056 31.2l6.044-1.954A15.9 15.9 0 0016 32c8.822 0 16-7.178 16-16S24.822 0 16.004 0zm9.33 22.614c-.39 1.1-1.932 2.014-3.17 2.28-.846.18-1.95.322-5.67-1.218-4.762-1.972-7.826-6.816-8.064-7.13-.23-.314-1.884-2.506-1.884-4.778s1.196-3.39 1.62-3.852c.424-.462.926-.578 1.238-.578.314 0 .626.002.9.004.29.002.678-.11 1.06.808.39.938 1.332 3.25 1.448 3.486.118.236.194.512.04.826-.156.314-.236.508-.47.784-.236.274-.496.614-.708.824-.236.236-.482.49-.208.96.276.462 1.226 2.024 2.632 3.278 1.808 1.618 3.332 2.118 3.796 2.354.462.236.732.198 1.002-.118.27-.314 1.158-1.35 1.466-1.812.308-.462.616-.386 1.04-.236.424.156 2.682 1.264 3.142 1.494.462.236.768.352.882.548.118.194.118 1.136-.272 2.238z"/>
+    </svg>
+</a>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const linkId = urlParams.get('id');
+let pollInterval = null;
+let currentLinkId = '';
+
+if (!linkId) { showState('notFound'); } else { loadPaymentLink(linkId); }
+
+function showState(state) {
+    document.getElementById('loadingState').style.display = state === 'loading' ? 'block' : 'none';
+    document.getElementById('notFound').style.display = state === 'notFound' ? 'block' : 'none';
+    document.getElementById('paymentCard').style.display = state === 'payment' ? 'block' : 'none';
+}
+
+function loadPaymentLink(id) {
+    showState('loading');
+    currentLinkId = id;
+    fetch('/api/links?action=check&id=' + id)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) { showState('notFound'); return; }
+            document.getElementById('payTitle').textContent = data.title;
+            document.getElementById('payDesc').textContent = data.description || 'Complete your payment to receive your order.';
+            document.getElementById('payAmount').textContent = data.amount.toLocaleString();
+            if (data.status === 'paid') { showPaymentSuccess(); loadDelivery(id); }
+            showState('payment');
+        })
+        .catch(() => { showState('notFound'); });
+}
+
+function initiatePayment() {
+    const phone = document.getElementById('phoneNumber').value.trim();
+    if (phone.length < 9 || phone.length > 10) {
+        showError('Enter a valid phone number (e.g., 0712, 0112, 712, 112)');
+        return;
+    }
+
+    const btn = document.getElementById('payBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Processing...';
+
+    fetch('/api/stk-push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ link_id: currentLinkId, phone_number: phone })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('btnSection').style.display = 'none';
+            document.getElementById('badgesSection').style.display = 'none';
+            document.getElementById('statusPending').classList.add('show');
+            startPolling();
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Pay with M-Pesa';
+            showError(data.message || 'Payment initiation failed');
+        }
+    })
+    .catch(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Pay with M-Pesa';
+        showError('Connection error. Check internet and retry.');
+    });
+}
+
+function startPolling() {
+    let attempts = 0;
+    // Poll every 10 seconds, max 6 attempts (60 seconds total)
+    pollInterval = setInterval(() => {
+        attempts++;
+        if (attempts > 6) {
+            clearInterval(pollInterval);
+            document.getElementById('statusPending').classList.remove('show');
+            showError('Payment timed out. Please try again.');
+            return;
+        }
+        fetch('/api/links?action=check&id=' + currentLinkId)
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'paid') {
+                    clearInterval(pollInterval);
+                    showPaymentSuccess();
+                    loadDelivery(currentLinkId);
+                }
+                else if (data.status === 'failed') {
+                    clearInterval(pollInterval);
+                    document.getElementById('statusPending').classList.remove('show');
+                    showError('Payment failed or cancelled.');
+                }
+            });
+    }, 10000); // 10 second polling interval
+}
+
+function showPaymentSuccess() {
+    document.getElementById('formSection').style.display = 'none';
+    document.getElementById('btnSection').style.display = 'none';
+    document.getElementById('badgesSection').style.display = 'none';
+    document.getElementById('statusPending').classList.remove('show');
+    document.getElementById('statusError').classList.remove('show');
+    document.getElementById('successScreen').classList.add('show');
+}
+
+function loadDelivery(id) {
+    fetch('/api/links?action=delivery&id=' + id)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            const section = document.getElementById('deliverySection');
+            const content = document.getElementById('deliveryContent');
+            const fileLink = document.getElementById('deliveryFileLink');
+            if (data.content_text) { content.textContent = data.content_text; section.classList.add('show'); }
+            if (data.content_file) {
+                fileLink.href = '/api/serve-file?f=' + encodeURIComponent(data.content_file);
+                document.getElementById('deliveryFileName').textContent = 'Download: ' + (data.content_file_name || 'File');
+                fileLink.style.display = 'inline-flex';
+                section.classList.add('show');
+            }
+            if (!data.content_text && !data.content_file) {
+                content.textContent = 'Order confirmed. Seller will deliver content shortly.';
+                section.classList.add('show');
+            }
+        });
+}
+
+function showError(msg) {
+    document.getElementById('errorMessage').textContent = msg;
+    document.getElementById('statusError').classList.add('show');
+}
+
+function resetPayment() {
+    document.getElementById('statusError').classList.remove('show');
+    document.getElementById('formSection').style.display = 'block';
+    document.getElementById('btnSection').style.display = 'block';
+    document.getElementById('badgesSection').style.display = 'flex';
+    document.getElementById('payBtn').disabled = false;
+    document.getElementById('payBtn').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Pay with M-Pesa';
+}
+</script>
+
+</body>
+</html>

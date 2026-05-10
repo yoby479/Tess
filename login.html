@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — TOXIC TECH PLUGER</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.png">
+    <style>
+        .login-subtitle {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 24px;
+            padding: 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            letter-spacing: 0.5px;
+        }
+        .login-subtitle span { color: var(--neon); }
+    </style>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <div class="login-logo">
+            <img src="logo.png" alt="TTP" class="login-logo-img">
+            <h1>Toxic Tech Pluger</h1>
+            <p>Admin Access Terminal</p>
+        </div>
+
+        <div class="login-subtitle">
+            <span>root@ttp:~$</span> authentication required
+        </div>
+
+        <div class="alert alert-error" id="errorAlert">
+            <span>&#9888;</span>
+            <span id="errorMsg">Access denied</span>
+        </div>
+
+        <div class="alert alert-info" id="infoAlert">
+            <span class="spinner"></span>
+            <span id="infoMsg">Authenticating...</span>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-input" id="username" placeholder="enter username" required autocomplete="off" spellcheck="false">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" id="password" placeholder="enter password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="loginBtn">
+                &gt;_ Authenticate
+            </button>
+        </form>
+
+        <div style="text-align:center;margin-top:20px;">
+            <a href="index.html" style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono);">
+                &larr; back to home
+            </a>
+        </div>
+
+        <div class="powered-by">
+            <span>Powered by <span class="brand">yobby mind's</span></span>
+        </div>
+    </div>
+</div>
+
+<!-- FLOATING WHATSAPP BUTTON -->
+<a href="https://wa.me/254104751847" target="_blank" class="whatsapp-float" title="Chat with us on WhatsApp">
+    <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor">
+        <path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.132 6.744 3.054 9.378L1.056 31.2l6.044-1.954A15.9 15.9 0 0016 32c8.822 0 16-7.178 16-16S24.822 0 16.004 0zm9.33 22.614c-.39 1.1-1.932 2.014-3.17 2.28-.846.18-1.95.322-5.67-1.218-4.762-1.972-7.826-6.816-8.064-7.13-.23-.314-1.884-2.506-1.884-4.778s1.196-3.39 1.62-3.852c.424-.462.926-.578 1.238-.578.314 0 .626.002.9.004.29.002.678-.11 1.06.808.39.938 1.332 3.25 1.448 3.486.118.236.194.512.04.826-.156.314-.236.508-.47.784-.236.274-.496.614-.708.824-.236.236-.482.49-.208.96.276.462 1.226 2.024 2.632 3.278 1.808 1.618 3.332 2.118 3.796 2.354.462.236.732.198 1.002-.118.27-.314 1.158-1.35 1.466-1.812.308-.462.616-.386 1.04-.236.424.156 2.682 1.264 3.142 1.494.462.236.768.352.882.548.118.194.118 1.136-.272 2.238z"/>
+    </svg>
+</a>
+
+<script>
+fetch('/api/auth?action=check')
+    .then(r => r.json())
+    .then(data => {
+        if (data.logged_in) window.location.href = 'admin.html';
+    });
+
+function handleLogin(e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('loginBtn');
+    const errorAlert = document.getElementById('errorAlert');
+    const infoAlert = document.getElementById('infoAlert');
+
+    errorAlert.classList.remove('show');
+    infoAlert.classList.add('show');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Verifying...';
+
+    fetch('/api/auth?action=login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    })
+    .then(r => r.json())
+    .then(data => {
+        infoAlert.classList.remove('show');
+        if (data.success) {
+            window.location.href = 'admin.html';
+        } else {
+            errorAlert.classList.add('show');
+            document.getElementById('errorMsg').textContent = data.message || 'Access denied';
+            btn.disabled = false;
+            btn.innerHTML = '&gt;_ Authenticate';
+        }
+    })
+    .catch(() => {
+        infoAlert.classList.remove('show');
+        errorAlert.classList.add('show');
+        document.getElementById('errorMsg').textContent = 'Connection failed. Retry.';
+        btn.disabled = false;
+        btn.innerHTML = '&gt;_ Authenticate';
+    });
+}
+</script>
+
+</body>
+</html>

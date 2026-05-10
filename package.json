@@ -1,0 +1,19 @@
+{
+  "name": "toxic-tech-pluger",
+  "version": "3.0.0",
+  "description": "TOXIC TECH PLUGER - Lipa Link Platform by YOBBYKING",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o cloudflared && chmod +x cloudflared && echo 'cloudflared downloaded OK'"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^2.7.0"
+  },
+  "engines": {
+    "node": "18.x or 20.x"
+  }
+}
