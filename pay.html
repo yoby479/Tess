@@ -685,7 +685,7 @@ function loadPaymentLink(id) {
             document.getElementById('payTitle').textContent = data.title;
             document.getElementById('payDesc').textContent = data.description || 'Complete your payment to receive your order.';
             document.getElementById('payAmount').textContent = data.amount.toLocaleString();
-            if (data.status === 'paid') { showPaymentSuccess(); loadDelivery(id); }
+            if (data.status === 'paid') { window.location.href = 'success.html?id=' + encodeURIComponent(id); return; }
             showState('payment');
         })
         .catch(() => { showState('notFound'); });
@@ -730,13 +730,13 @@ function initiatePayment() {
 
 function startPolling() {
     let attempts = 0;
-    // Poll every 10 seconds, max 6 attempts (60 seconds total)
+    // Poll every 3 seconds, max 5 attempts (15 seconds total timeout)
     pollInterval = setInterval(() => {
         attempts++;
-        if (attempts > 6) {
+        if (attempts > 5) {
             clearInterval(pollInterval);
             document.getElementById('statusPending').classList.remove('show');
-            showError('Payment timed out. Please try again.');
+            showError('Payment timed out. If you already paid, your content will be available shortly.');
             return;
         }
         fetch('/api/links?action=check&id=' + currentLinkId)
@@ -744,8 +744,8 @@ function startPolling() {
             .then(data => {
                 if (data.status === 'paid') {
                     clearInterval(pollInterval);
-                    showPaymentSuccess();
-                    loadDelivery(currentLinkId);
+                    // Redirect directly to success page with delivery content
+                    window.location.href = 'success.html?id=' + encodeURIComponent(currentLinkId);
                 }
                 else if (data.status === 'failed') {
                     clearInterval(pollInterval);
@@ -753,7 +753,7 @@ function startPolling() {
                     showError('Payment failed or cancelled.');
                 }
             });
-    }, 10000); // 10 second polling interval
+    }, 3000); // 3 second polling interval
 }
 
 function showPaymentSuccess() {

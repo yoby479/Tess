@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful — TOXIC TECH PLUGER</title>
+    <link rel="icon" href="logo.png">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            background: #000000;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        /* === LOADING === */
+        .loading-wrap {
+            text-align: center;
+        }
+        .loading-wrap .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid #222;
+            border-top-color: #22c55e;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto 16px;
+        }
+        .loading-wrap p { color: #666; font-size: 13px; }
+
+        /* === CARD === */
+        .success-card {
+            background: #ffffff;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 440px;
+            overflow: hidden;
+            box-shadow: 0 8px 40px rgba(34,197,94,0.15);
+            display: none;
+        }
+        .success-card.show { display: block; }
+
+        /* === HEADER === */
+        .success-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 18px 20px 14px;
+        }
+        .success-logo-box {
+            width: 38px;
+            height: 38px;
+            background: #22c55e;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .success-logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .success-brand {
+            font-size: 14px;
+            font-weight: 800;
+            color: #1a1a2e;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .success-badge {
+            background: #22c55e;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* === SUCCESS BANNER === */
+        .success-banner {
+            background: linear-gradient(135deg, #052e16 0%, #14532d 50%, #052e16 100%);
+            padding: 36px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .success-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 30% 40%, rgba(34,197,94,0.2) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(251,191,36,0.1) 0%, transparent 50%);
+        }
+        .success-banner-inner { position: relative; z-index: 1; }
+
+        .success-checkmark-circle {
+            width: 80px;
+            height: 80px;
+            background: #22c55e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            animation: successPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 40px rgba(34,197,94,0.4), 0 0 80px rgba(34,197,94,0.15);
+        }
+        @keyframes successPop {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-30px) rotate(180deg); opacity: 0; }
+        }
+
+        .success-title {
+            font-size: 22px;
+            font-weight: 900;
+            color: #22c55e;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(34,197,94,0.4);
+        }
+        .success-subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .success-yobby {
+            color: #fbbf24;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(251,191,36,0.3);
+        }
+        .success-receipt {
+            margin-top: 14px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: inline-block;
+            color: rgba(255,255,255,0.7);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .success-receipt span { color: #22c55e; }
+
+        /* === DELIVERY SECTION === */
+        .delivery-card {
+            padding: 24px;
+            text-align: left;
+        }
+        .delivery-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .delivery-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(34,197,94,0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .delivery-header h3 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #1a1a2e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .delivery-header p {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .delivery-box {
+            background: #f8faf8;
+            border: 1px solid rgba(34,197,94,0.15);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .delivery-box-text {
+            color: #444;
+            font-size: 13px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .delivery-file-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 18px;
+            background: #22c55e;
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.15s;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+        }
+        .delivery-file-btn:hover { background: #16a34a; color: white; transform: translateY(-1px); }
+        .delivery-file-btn:active { transform: scale(0.98); }
+        .delivery-file-btn .file-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .delivery-file-btn .file-info { flex: 1; }
+        .delivery-file-btn .file-name { font-size: 13px; font-weight: 700; }
+        .delivery-file-btn .file-action { font-size: 11px; opacity: 0.85; }
+        .delivery-file-btn .download-arrow {
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        /* === ORDER INFO === */
+        .order-info {
+            padding: 0 24px 20px;
+        }
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+        .order-row:last-child { border-bottom: none; }
+        .order-label { color: #888; font-weight: 600; }
+        .order-value { color: #333; font-weight: 700; }
+        .order-value.paid { color: #22c55e; }
+        .order-value.amount { color: #6C5CE7; font-size: 16px; }
+
+        /* === FOOTER === */
+        .success-footer {
+            padding: 16px 24px;
+            text-align: center;
+            border-top: 1px solid #f0f0f0;
+        }
+        .success-footer .home-link {
+            display: inline-block;
+            padding: 10px 24px;
+            background: #6C5CE7;
+            color: white;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            transition: background 0.2s;
+        }
+        .success-footer .home-link:hover { background: #5a4bd6; color: white; }
+        .success-footer .powered {
+            font-size: 10px;
+            color: #bbb;
+            letter-spacing: 0.5px;
+        }
+        .success-footer .powered .brand {
+            font-weight: 800;
+            color: #6C5CE7;
+        }
+
+        /* === NO DELIVERY MSG === */
+        .no-delivery {
+            text-align: center;
+            padding: 16px;
+            color: #888;
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* === WHATSAPP FLOAT === */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(37,211,102,0.4);
+            z-index: 9999;
+            transition: transform 0.3s, box-shadow 0.3s;
+            color: white;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(37,211,102,0.5);
+            color: white;
+        }
+        .whatsapp-float::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid rgba(37,211,102,0.4);
+            animation: wa-pulse 2s ease-in-out infinite;
+        }
+        @keyframes wa-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.15); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-wrap" id="loadingState">
+    <div class="spinner"></div>
+    <p>Loading your order...</p>
+</div>
+
+<!-- SUCCESS CARD -->
+<div class="success-card" id="successCard">
+
+    <!-- HEADER -->
+    <div class="success-header">
+        <div class="success-logo-box">
+            <img src="logo.png" alt="TTP">
+        </div>
+        <span class="success-brand">Toxic Tech Pluger</span>
+        <span class="success-badge">Paid</span>
+    </div>
+
+    <!-- SUCCESS BANNER -->
+    <div class="success-banner">
+        <div class="success-banner-inner">
+            <div class="success-checkmark-circle">&#9989;</div>
+            <div class="success-title">Payment Successfully</div>
+            <div class="success-subtitle">Thank you for using our services</div>
+            <div class="success-yobby">( YOBBYKING )</div>
+            <div class="success-receipt" id="receiptInfo">Order ID: <span id="orderId">---</span></div>
+        </div>
+    </div>
+
+    <!-- ORDER INFO -->
+    <div class="order-info" id="orderInfo">
+        <div class="order-row">
+            <span class="order-label">Service</span>
+            <span class="order-value" id="serviceTitle">---</span>
+        </div>
+        <div class="order-row">
+            <span class="order-label">Amount Paid</span>
+            <span class="order-value amount" id="serviceAmount">KSh 0</span>
+        </div>
+        <div class="order-row">
+            <span class="order-label">Status</span>
+            <span class="order-value paid">Confirmed &#9989;</span>
+        </div>
+        <div class="order-row" id="paidTimeRow">
+            <span class="order-label">Paid At</span>
+            <span class="order-value" id="paidTime">---</span>
+        </div>
+    </div>
+
+    <!-- DELIVERY -->
+    <div class="delivery-card" id="deliveryCard" style="display:none;">
+        <div class="delivery-header">
+            <div class="delivery-icon">&#127873;</div>
+            <div>
+                <h3>Your Delivery</h3>
+                <p>Download your files or view instructions below</p>
+            </div>
+        </div>
+
+        <!-- TEXT DELIVERY -->
+        <div class="delivery-box" id="textDeliveryBox" style="display:none;">
+            <div class="delivery-box-text" id="deliveryText"></div>
+        </div>
+
+        <!-- FILE DELIVERY -->
+        <div id="fileDeliveryBox" style="display:none;">
+            <a id="deliveryFileLink" href="#" class="delivery-file-btn">
+                <div class="file-icon">&#128206;</div>
+                <div class="file-info">
+                    <div class="file-name" id="deliveryFileName">Download File</div>
+                    <div class="file-action">Tap to download</div>
+                </div>
+                <div class="download-arrow">&#11015;</div>
+            </a>
+        </div>
+
+        <!-- NO DELIVERY -->
+        <div class="no-delivery" id="noDeliveryMsg" style="display:none;">
+            Order confirmed. The seller will deliver your content shortly.
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="success-footer">
+        <a href="index.html" class="home-link">&#8592; Back to Home</a>
+        <br>
+        <span class="powered">Powered by <span class="brand">yobby mind's</span> &bull; Secured by M-Pesa</span>
+    </div>
+
+</div>
+
+<!-- FLOATING WHATSAPP BUTTON -->
+<a href="https://wa.me/254104751847" target="_blank" class="whatsapp-float" title="Need help? Chat on WhatsApp">
+    <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor">
+        <path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.132 6.744 3.054 9.378L1.056 31.2l6.044-1.954A15.9 15.9 0 0016 32c8.822 0 16-7.178 16-16S24.822 0 16.004 0zm9.33 22.614c-.39 1.1-1.932 2.014-3.17 2.28-.846.18-1.95.322-5.67-1.218-4.762-1.972-7.826-6.816-8.064-7.13-.23-.314-1.884-2.506-1.884-4.778s1.196-3.39 1.62-3.852c.424-.462.926-.578 1.238-.578.314 0 .626.002.9.004.29.002.678-.11 1.06.808.39.938 1.332 3.25 1.448 3.486.118.236.194.512.04.826-.156.314-.236.508-.47.784-.236.274-.496.614-.708.824-.236.236-.482.49-.208.96.276.462 1.226 2.024 2.632 3.278 1.808 1.618 3.332 2.118 3.796 2.354.462.236.732.198 1.002-.118.27-.314 1.158-1.35 1.466-1.812.308-.462.616-.386 1.04-.236.424.156 2.682 1.264 3.142 1.494.462.236.768.352.882.548.118.194.118 1.136-.272 2.238z"/>
+    </svg>
+</a>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const linkId = urlParams.get('id');
+
+if (!linkId) {
+    document.getElementById('loadingState').innerHTML = '<div style="font-size:40px;margin-bottom:12px;">&#9888;</div><p style="color:#ef4444;font-weight:600;">No order ID found</p><p><a href="index.html" style="color:#6C5CE7;">Go Home</a></p>';
+} else {
+    loadOrderDetails(linkId);
+}
+
+function loadOrderDetails(id) {
+    document.getElementById('orderId').textContent = id;
+
+    // Load link details
+    fetch('/api/links?action=check&id=' + id)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success || data.status !== 'paid') {
+                // Not paid yet, redirect back to pay page
+                window.location.href = 'pay.html?id=' + encodeURIComponent(id);
+                return;
+            }
+
+            // Show success card
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('successCard').classList.add('show');
+
+            // Fill order info
+            document.getElementById('serviceTitle').textContent = data.title || 'Service';
+            document.getElementById('serviceAmount').textContent = 'KSh ' + (data.amount || 0).toLocaleString();
+            if (data.paid_at) {
+                document.getElementById('paidTime').textContent = data.paid_at;
+            }
+
+            // Load delivery content
+            loadDelivery(id);
+        })
+        .catch(err => {
+            document.getElementById('loadingState').innerHTML = '<div style="font-size:40px;margin-bottom:12px;">&#9888;</div><p style="color:#ef4444;font-weight:600;">Error loading order</p><p><a href="pay.html?id=' + encodeURIComponent(id) + '" style="color:#6C5CE7;">Back to Payment</a></p>';
+        });
+}
+
+function loadDelivery(id) {
+    fetch('/api/links?action=delivery&id=' + id)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+
+            const card = document.getElementById('deliveryCard');
+            const textBox = document.getElementById('textDeliveryBox');
+            const fileBox = document.getElementById('fileDeliveryBox');
+            const noMsg = document.getElementById('noDeliveryMsg');
+            let hasContent = false;
+
+            if (data.content_text && data.content_text.trim()) {
+                document.getElementById('deliveryText').textContent = data.content_text;
+                textBox.style.display = 'block';
+                hasContent = true;
+            }
+
+            if (data.content_file) {
+                const link = document.getElementById('deliveryFileLink');
+                link.href = '/api/serve-file?f=' + encodeURIComponent(data.content_file);
+                document.getElementById('deliveryFileName').textContent = data.content_file_name || 'Download File';
+                fileBox.style.display = 'block';
+                hasContent = true;
+            }
+
+            if (!hasContent) {
+                noMsg.style.display = 'block';
+            }
+
+            card.style.display = 'block';
+        });
+}
+</script>
+
+</body>
+</html>

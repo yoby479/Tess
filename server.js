@@ -129,6 +129,7 @@ app.get('/index.html', (req, res) => res.sendFile(path.join(__dirname, 'index.ht
 app.get('/login.html', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
 app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 app.get('/pay.html', (req, res) => res.sendFile(path.join(__dirname, 'pay.html')));
+app.get('/success.html', (req, res) => res.sendFile(path.join(__dirname, 'success.html')));
 
 // ============================================
 // API - AUTH
